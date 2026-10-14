@@ -32,11 +32,16 @@ oracle-samples. No verb gains, loses or renames an argument.
   planted `AIDP_ENDPOINT` or `OCI_CONFIG_FILE` -- in an export someone sent
   you -- would have been honoured (flagged, unfixed, in the oracle-samples
   security review #146). A `.env` may now set only `AIDP_WORKSPACE_KEY`,
-  `AIDP_CLUSTER_KEY`, `AIDP_INSTANCE_ID`, `OCI_NAMESPACE`, `OCI_CLI_PROFILE`,
-  `OCI_CONFIG_PROFILE`, `OCI_CLI_REGION` and `OCI_CLI_AUTH`; other keys of
-  ours are ignored with a warning naming the key, never its value. On Linux
-  and macOS a `.env` owned by another user or writable by others is not read.
-  A shell value is still never overridden.
+  `AIDP_CLUSTER_KEY`, `AIDP_INSTANCE_ID`, `OCI_NAMESPACE`, `OCI_CLI_PROFILE`
+  and `OCI_CONFIG_PROFILE`; other keys of ours are ignored with a warning
+  naming the key, never its value. `OCI_CLI_AUTH` and `OCI_CLI_REGION` are
+  among them: a planted `OCI_CLI_AUTH=instance_principal` would make
+  `publish --apply` act as an OCI host's own identity. On Linux and macOS a
+  `.env` that is a symbolic link, is owned by another user, or can be
+  written by anyone else is not read; group-write is accepted when the group
+  is the user's alone, so the `-rw-rw-r--` files Ubuntu and Fedora create
+  are read. The check judges the file it reads, opened once. A shell value
+  is still never overridden.
 
 - **The Codex plugin's MCP server never started.** Its `.mcp.json` set
   `PYTHONPATH` to `${CLAUDE_PLUGIN_ROOT}` (later `${PLUGIN_ROOT}`), and Codex

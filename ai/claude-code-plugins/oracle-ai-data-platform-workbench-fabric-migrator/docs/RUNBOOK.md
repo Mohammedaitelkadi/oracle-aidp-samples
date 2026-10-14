@@ -447,12 +447,15 @@ keep it that way.
 untrusted — it may sit in an export someone sent you — so it can set only
 these keys, and only when the variable is not already set in your shell:
 `AIDP_WORKSPACE_KEY`, `AIDP_CLUSTER_KEY`, `AIDP_INSTANCE_ID`, `OCI_NAMESPACE`,
-`OCI_CLI_PROFILE`, `OCI_CONFIG_PROFILE`, `OCI_CLI_REGION`, `OCI_CLI_AUTH`.
+`OCI_CLI_PROFILE`, `OCI_CONFIG_PROFILE`.
 They choose among your own targets. Anything that changes where requests or
-credentials go — `AIDP_ENDPOINT`, `OCI_CONFIG_FILE`, an `AIDP_SECRET_*` — is
-ignored with a warning naming the key, never the value (export it in your
-shell if you mean it), and a stray `PATH=` or `NODE_OPTIONS=` is ignored too.
-A `.env` owned by another user, or writable by others, is not read at all.
+credentials go — `AIDP_ENDPOINT`, `OCI_CONFIG_FILE`, `OCI_CLI_AUTH`,
+`OCI_CLI_REGION`, an `AIDP_SECRET_*` — is ignored with a warning naming the
+key, never the value (export it in your shell if you mean it), and a stray
+`PATH=` or `NODE_OPTIONS=` is ignored too. A `.env` that is a symbolic link,
+is owned by another user, or can be written by anyone else is not read at
+all; group-write is fine when the group is yours alone, as on Ubuntu and
+Fedora.
 `plan` reads `OCI_NAMESPACE` this way — that is why a namespace set once in
 `.env` reaches steps 3 and 4 without a flag.
 
