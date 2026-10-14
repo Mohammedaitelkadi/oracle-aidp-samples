@@ -182,10 +182,19 @@ class InstallUpgradesPipFirstTests(unittest.TestCase):
         self.assertIn("21.3", text)
 
     def test_the_readme_windows_steps_upgrade_pip_before_installing(self):
+        # The whole fenced block holding the Windows steps. A fixed-length
+        # slice broke on any README edit that lengthened a line above the
+        # install (review of oracle-samples #152).
         text = (ROOT / "README.md").read_text(encoding="utf-8")
-        start = text.index("py -m venv .venv")
-        self._assert_upgrade_precedes_editable(text[start:start + 400],
-                                               "the README's Windows steps")
+        venv = text.index("py -m venv .venv")
+        block = text[text.rindex("```", 0, venv):text.index("```", venv)]
+        self._assert_upgrade_precedes_editable(block, "the README's Windows steps")
+
+    def test_the_windows_check_reads_the_block_not_a_slice(self):
+        source = (ROOT / "tests" / "test_docs_claims.py").read_text(encoding="utf-8")
+        start = source.index("def test_the_readme_windows_steps_upgrade_pip_before_installing")
+        body = source[start:source.index("def test_the_windows_check_reads", start)]
+        self.assertNotRegex(body, r"\+ ?\d{2,}\]")
 
     def test_the_skill_names_the_python_dash_m_fallback(self):
         """The fallback exists (fabric_aidp/__main__.py) only if an agent

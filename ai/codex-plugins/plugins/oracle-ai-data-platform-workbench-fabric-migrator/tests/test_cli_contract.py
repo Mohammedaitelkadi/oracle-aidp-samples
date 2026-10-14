@@ -474,6 +474,21 @@ class PythonDashMTests(unittest.TestCase):
         self.assertEqual(done.stdout.strip(),
                          f"fabric-aidp {fabric_aidp.__version__}")
 
+    def test_importing_it_does_not_run_the_cli(self):
+        """Review of oracle-samples #152: with no `__name__` guard, anything
+        that imports every module of the package -- pydoc, a coverage or
+        docs walker -- got a SystemExit from argparse."""
+        import importlib
+        import sys
+        sys.modules.pop("fabric_aidp.__main__", None)
+        try:
+            with redirect_stderr(io.StringIO()):
+                importlib.import_module("fabric_aidp.__main__")
+        except SystemExit as exc:  # pragma: no cover - the bug
+            self.fail(f"importing fabric_aidp.__main__ exited ({exc.code})")
+        finally:
+            sys.modules.pop("fabric_aidp.__main__", None)
+
     def test_it_passes_the_exit_code_through(self):
         """A usage error exits 2 from argparse; a verb's own failure exits
         with what `main` returned. Both must reach the shell unchanged."""

@@ -2,4 +2,5 @@
 not on PATH (pip's user scripts directory often is not)."""
 from fabric_aidp.cli import main
 
-raise SystemExit(main())
+if __name__ == "__main__":
+    raise SystemExit(main())
