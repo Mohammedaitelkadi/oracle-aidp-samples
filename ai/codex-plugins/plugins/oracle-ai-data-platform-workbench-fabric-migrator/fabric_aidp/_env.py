@@ -43,9 +43,10 @@ def _group_is_private(gid: int, uid: int) -> bool:
 
     Debian, Ubuntu and Fedora give each user a group of their own and a umask
     of 002, so every file they create is group-writable -- by a group with
-    one member. OpenSSH accepts group-write on these terms and so does this:
-    the members are the group's own list plus every account whose primary
-    group it is, and the owner must be the only one.
+    one member. Group-write is accepted on these terms (OpenSSH itself does
+    not: it refuses any `st_mode & 022` file): the members are the group's
+    own list plus every account whose primary group it is, and the owner
+    must be the only one.
     """
     try:
         import grp

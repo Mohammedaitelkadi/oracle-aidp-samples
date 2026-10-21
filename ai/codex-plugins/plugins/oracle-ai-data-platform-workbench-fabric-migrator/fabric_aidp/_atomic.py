@@ -59,8 +59,14 @@ def _length_shaped(cause: OSError, temp: Path) -> bool:
     """
     if cause.errno in (errno.ENAMETOOLONG, errno.ENOENT):
         return True
+    if len(temp.name) <= _WINDOWS_NAME_MAX:
+        return False
+    # `open()` on Windows goes through the C runtime, which maps
+    # ERROR_INVALID_NAME to a plain EINVAL and sets no `winerror` at all, so
+    # a real too-long temp name arrives as OSError(22) with winerror None.
+    # Accept either spelling once the name really is over the limit.
     return (getattr(cause, "winerror", None) == _WINDOWS_ERROR_INVALID_NAME
-            and len(temp.name) > _WINDOWS_NAME_MAX)
+            or (os.name == "nt" and cause.errno == errno.EINVAL))
 
 
 def _temp_write_error(path: Path, temp: Path, cause: OSError) -> OSError:

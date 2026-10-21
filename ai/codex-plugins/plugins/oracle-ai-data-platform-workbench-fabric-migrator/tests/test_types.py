@@ -1,4 +1,5 @@
 import errno
+import os
 import unittest
 from pathlib import Path
 from tempfile import TemporaryDirectory
@@ -208,14 +209,21 @@ class TempWriteFailureTests(unittest.TestCase):
         self.assertNotIn("length limit", message)
 
     def test_a_posix_einval_is_not_blamed_on_length(self):
-        """No `winerror`, so not the Windows case, however long the name."""
+        """No `winerror`, so on POSIX not the Windows case, however long the
+        name. On Windows itself this IS the real spelling: `open()` goes
+        through the C runtime, which turns ERROR_INVALID_NAME into a plain
+        EINVAL with no `winerror`, so there a temp name over 255 characters
+        gets the explanation (the unmocked test above sees exactly this)."""
         with TemporaryDirectory() as d:
             path = Path(d) / ("a" * 248)
             with mock.patch.object(Path, "open",
                                    side_effect=OSError(errno.EINVAL, "Invalid argument")):
                 with self.assertRaises(OSError) as caught:
                     write_text_atomic(path, "x")
-        self.assertNotIn("length limit", str(caught.exception))
+        if os.name == "nt":
+            self.assertIn("length limit", str(caught.exception))
+        else:
+            self.assertNotIn("length limit", str(caught.exception))
 
     def test_a_permission_failure_is_not_blamed_on_the_name_length(self):
         """Every OSError here names the temp file, but only a length-shaped
