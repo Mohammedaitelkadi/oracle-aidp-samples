@@ -117,8 +117,8 @@ class UntrustedDotenvTests(unittest.TestCase):
         """Review of oracle-samples #152: Ubuntu and Fedora give each user a
         private group and a umask of 002, so a .env made in an editor is
         -rw-rw-r--. Refusing every group-writable file skipped a normal .env
-        there. Group-write is fine when the group holds only the owner --
-        OpenSSH accepts it on the same terms -- and refused otherwise."""
+        there. Group-write is fine when the group holds only the owner and
+        refused otherwise."""
         for private in (True, False):
             with self.subTest(private_group=private), \
                     mock.patch("fabric_aidp._env._group_is_private",
@@ -183,9 +183,9 @@ class UntrustedDotenvTests(unittest.TestCase):
 
 
 class PrivateGroupTests(unittest.TestCase):
-    """`_group_is_private` asks the same question OpenSSH does: is the owner
-    the only member of the file's group, counting both the group's member
-    list and every account whose primary group it is?
+    """`_group_is_private` asks: is the owner the only member of the file's
+    group, counting both the group's member list and every account whose
+    primary group it is?
 
     The group database is replaced with fake `grp`/`pwd` modules, so these
     run the same on every platform, Windows included, where the real

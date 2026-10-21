@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.1.1 — unreleased
+## 0.1.1 — 2026-10-21
 
 Security and launcher fixes on top of the 0.1.0 plugins published to
 oracle-samples. No verb gains, loses or renames an argument.
